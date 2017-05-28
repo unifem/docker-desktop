@@ -13,4 +13,10 @@ script:
      cd debug &&
      git commit --allow-empty -m "Trigger compilation." &&
      git push'
+# Trigger build of dev-matlab branch
+  - 'cat success &&
+     git clone -b dev-matlab https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev-matlab 2> /dev/null &&
+     cd dev-matlab &&
+     git commit --allow-empty -m "Trigger compilation." &&
+     git push'
   - docker images
