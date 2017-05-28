@@ -89,6 +89,8 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         clang-format && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
+USER $DOCKER_USER
+
 # Clone ilupack4m, paracoder, and petsc4m
 RUN mkdir $DOCKER_HOME/fastsolve && \
     cd $DOCKER_HOME/fastsolve && \
@@ -101,7 +103,14 @@ RUN mkdir $DOCKER_HOME/fastsolve && \
     \
     cd $DOCKER_HOME/fastsolve && \
     git clone https://github.com/fastsolve/petsc4m && \
-    cd petsc4m && octave --eval "build_petsc -force"
-
+    cd petsc4m && octave --eval "build_petsc -force" && \
+    \
+    echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
+    echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    echo "@atom $DOCKER_HOME/fastsolve" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME/fastsolve
+USER root
