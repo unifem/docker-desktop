@@ -1,0 +1,11 @@
+language: python
+
+services: docker
+
+script:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
+  - '[[ "$TRAVIS_EVENT_TYPE" == "push" &&
+        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile -e .travis.yml)" ]] ||
+  (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
+   docker push fastsolve/desktop)'
+  - docker images
