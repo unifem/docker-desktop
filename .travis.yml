@@ -10,6 +10,10 @@ script:
    docker push fastsolve/desktop && touch success)'
   - 'git clone -b dev git@github.com:fastsolve/docker-desktop.git dev && cd dev &&
     [[ ! -f ../success && "$TRAVIS_EVENT_TYPE" == "push" &&
-        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile)" ]] ||
+        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile) && touch success" ]] ||
    (docker build --tag fastsolve/desktop:dev . && docker push fastsolve/desktop:dev)'
+  - 'git clone -b debug git@github.com:fastsolve/docker-desktop.git debug && cd debug &&
+    [[ ! -f ../success && "$TRAVIS_EVENT_TYPE" == "push" &&
+        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile)" ]] ||
+   (docker build --tag fastsolve/desktop:debug . && docker push fastsolve/desktop:debug)'
   - docker images
