@@ -182,6 +182,7 @@ if __name__ == "__main__":
             decode('utf-8')[:-1]
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
+               "-v", "fastsolve_src:" + docker_home + "/fastsolve",
                "-v", "fastsolve_config:" + docker_home + "/.config",
                "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh"]
 
