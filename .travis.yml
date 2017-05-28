@@ -4,14 +4,17 @@ services: docker
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - 'docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
-     docker push fastsolve/desktop && touch succeed'
-  - 'cat succeed && git clone -b dev git@github.com:fastsolve/docker-desktop.git dev &&
+# Build if commit contains Dockerfile or .travis.yml
+  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n $TRAVIS_COMMIT_RANGE &&
+        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
+            grep -e Dockerfile -e .travis.yml)" ]] ||
+     (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
+      docker push fastsolve/desktop &&
+      touch success)'
+# Trigger build of dev branch
+  - 'cat success &&
+     git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
      cd dev &&
-     docker build --tag fastsolve/desktop:dev . &&
-     docker push fastsolve/desktop:dev && touch succeed'
-  - 'cat succeed && git clone -b debug git@github.com:fastsolve/docker-desktop.git debug &&
-     cd debug &&
-     docker build --tag fastsolve/desktop:debug . &&
-     docker push fastsolve/desktop:debug'
+     git commit --allow-empty -m "Trigger compilation." &&
+     git push'
   - docker images
