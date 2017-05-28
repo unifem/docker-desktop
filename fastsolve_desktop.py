@@ -30,7 +30,7 @@ parser.add_argument('-i', '--image',
 parser.add_argument('-t', '--tag',
                     help='Tag of the image. The default is latest. ' +
                     'If the image already has a tag, its tag prevails.',
-                    default="latest")
+                    default="dev")
 
 parser.add_argument('-p', '--pull',
                     help='Pull the latest Docker image. ' +
