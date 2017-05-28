@@ -45,8 +45,6 @@ RUN apt-add-repository ppa:octave/stable && \
         libatlas3-base \
         pstoedit \
         octave-info && \
-    pip install sympy && \
-    octave --eval 'pkg install -forge symbolic odepkg' && \
     apt-get install -y --no-install-recommends \
         python3-pip \
         python3-dev \
