@@ -14,10 +14,6 @@ WORKDIR /tmp
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        ddd \
-        electric-fence \
-        valgrind \
-        \
         meld \
         atom \
         clang-format && \
@@ -62,7 +58,7 @@ RUN add-apt-repository ppa:webupd8team/atom && \
 USER $DOCKER_USER
 
 # Clone ilupack4m, paracoder, and petsc4m
-RUN mkdir $DOCKER_HOME/fastsolve && \
+RUN mkdir -p $DOCKER_HOME/fastsolve && \
     cd $DOCKER_HOME/fastsolve && \
     git clone https://github.com/fastsolve/ilupack4m && \
     cd ilupack4m/makefiles && make TARGET=Octave && \
