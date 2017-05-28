@@ -4,16 +4,14 @@ services: docker
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - '[[ "$TRAVIS_EVENT_TYPE" == "push" &&
-        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile -e .travis.yml)" ]] ||
-  (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
-   docker push fastsolve/desktop && touch success)'
-  - 'git clone -b dev git@github.com:fastsolve/docker-desktop.git dev && cd dev &&
-    [[ ! -f ../success && "$TRAVIS_EVENT_TYPE" == "push" &&
-        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile) && touch success" ]] ||
-   (docker build --tag fastsolve/desktop:dev . && docker push fastsolve/desktop:dev)'
-  - 'git clone -b debug git@github.com:fastsolve/docker-desktop.git debug && cd debug &&
-    [[ ! -f ../success && "$TRAVIS_EVENT_TYPE" == "push" &&
-        -z "$(git diff --name-only HEAD~ | grep -e Dockerfile)" ]] ||
-   (docker build --tag fastsolve/desktop:debug . && docker push fastsolve/desktop:debug)'
+  - 'docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
+     docker push fastsolve/desktop && touch succeed'
+  - 'cat succeed && git clone -b dev git@github.com:fastsolve/docker-desktop.git dev &&
+     cd dev &&
+     docker build --tag fastsolve/desktop:dev . &&
+     docker push fastsolve/desktop:dev && touch succeed'
+  - 'cat succeed && git clone -b debug git@github.com:fastsolve/docker-desktop.git debug &&
+     cd debug &&
+     docker build --tag fastsolve/desktop:debug . &&
+     docker push fastsolve/desktop:debug'
   - docker images
