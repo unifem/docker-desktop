@@ -25,7 +25,6 @@ RUN apt-add-repository ppa:octave/stable && \
         rsync \
         wget \
         gdb \
-        ddd \
         ccache \
         \
         libboost-filesystem-dev \
