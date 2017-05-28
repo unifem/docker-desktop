@@ -11,8 +11,7 @@ USER root
 WORKDIR /tmp
 
 # Install system packages
-RUN add-apt-repository ppa:webupd8team/atom && \
-    apt-add-repository ppa:octave/stable && \
+RUN apt-add-repository ppa:octave/stable && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -38,11 +37,7 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         liblapack-dev \
         libmpich-dev \
         libopenblas-dev \
-        mpich \
-        \
-        meld \
-        atom \
-        clang-format && \
+        mpich && \
     apt-get install -y --no-install-recommends \
         octave \
         gnuplot-x11 \
@@ -53,8 +48,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         octave-info && \
     pip install sympy && \
     octave --eval 'pkg install -forge symbolic odepkg' && \
-    curl -L https://goo.gl/ExjLDP | bsdtar zxf - -C /usr/local --strip-components 2 && \
-    ln -s -f /usr/local/MATLAB/R2017a/bin/glnxa64/mlint /usr/local/bin && \
     apt-get install -y --no-install-recommends \
         python3-pip \
         python3-dev \
@@ -75,14 +68,10 @@ RUN pip3 install -U pip \
          pandas \
          nose \
          sphinx \
-         autopep8 \
-         flake8 \
          flufl.lock \
          ply \
          pytest \
          six \
-         PyQt5 \
-         spyder \
          urllib3 \
          ipython \
          jupyter \
@@ -184,34 +173,6 @@ RUN usermod -l $DOCKER_USER -d $DOCKER_HOME -m $OLD_USER && \
     echo 'run /usr/local/paracoder/.octaverc' >> $DOCKER_HOME/.octaverc && \
     echo 'run /usr/local/petsc4m/.octaverc' >> $DOCKER_HOME/.octaverc && \
     echo '@octave --force-gui' >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    \
-    apm install \
-        language-cpp14 \
-        language-matlab \
-        language-fortran \
-        language-docker \
-        autocomplete-python \
-        autocomplete-fortran \
-        git-plus \
-        merge-conflicts \
-        split-diff \
-        gcc-make-run \
-        platformio-ide-terminal \
-        intentions \
-        busy-signal \
-        linter-ui-default \
-        linter \
-        linter-gcc \
-        linter-gfortran \
-        linter-flake8 \
-        linter-matlab \
-        dbg \
-        output-panel \
-        dbg-gdb \
-        python-debugger \
-        auto-detect-indentation \
-        python-autopep8 \
-        clang-format && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME
