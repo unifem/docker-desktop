@@ -14,6 +14,10 @@ WORKDIR /tmp
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
+        ddd \
+        electric-fence \
+        valgrind \
+        \
         meld \
         atom \
         clang-format && \
