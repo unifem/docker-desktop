@@ -150,8 +150,8 @@ RUN mkdir -p /usr/local/paracoder && \
 ########################################################
 # Customization for user
 ########################################################
-ARG CDS_USER=fastsolve \
-    OLD_USER=$DOCKER_USER
+ARG CDS_USER=fastsolve
+ARG OLD_USER=$DOCKER_USER
 
 ENV DOCKER_USER=$CDS_USER \
     DOCKER_GROUP=$CDS_USER \
