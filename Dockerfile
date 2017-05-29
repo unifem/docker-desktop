@@ -58,7 +58,8 @@ RUN add-apt-repository ppa:webupd8team/atom && \
 USER $DOCKER_USER
 
 # Clone ilupack4m, paracoder, and petsc4m
-RUN mkdir -p $DOCKER_HOME/fastsolve && \
+RUN rm -f $DOCKER_HOME/.octaverc && \
+    mkdir -p $DOCKER_HOME/fastsolve && \
     cd $DOCKER_HOME/fastsolve && \
     git clone https://github.com/fastsolve/ilupack4m && \
     cd ilupack4m/makefiles && make TARGET=Octave && \
