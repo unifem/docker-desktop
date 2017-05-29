@@ -9,48 +9,51 @@ automatically open up the URL in the default web browser.
 
 from __future__ import print_function  # Only Python 2.x
 
-import argparse
 import sys
 import subprocess
 import time
 
-# Process command-line arguments
-parser = argparse.ArgumentParser(description=__doc__)
 
-parser.add_argument('-u', "--user",
-                    help='username used by the image. ' +
-                    ' The default is to retrieve from image.',
-                    default="")
+def parse_args(description):
+    "Parse command-line arguments"
 
-parser.add_argument('-i', '--image',
-                    help='The Docker image to use. ' +
-                    'The default is fastsolve/desktop.',
-                    default="fastsolve/desktop")
-parser.add_argument('-t', '--tag',
-                    help='Tag of the image. The default is latest. ' +
-                    'If the image already has a tag, its tag prevails.',
-                    default="latest")
+    import argparse
 
+    # Process command-line arguments
+    parser = argparse.ArgumentParser(description=__doc__)
 
-parser.add_argument('-p', '--pull',
-                    help='Pull the latest Docker image. ' +
-                    ' The default is not to pull.',
-                    dest='pull', action='store_true')
+    parser.add_argument('-u', "--user",
+                        help='username used by the image. ' +
+                        ' The default is to retrieve from image.',
+                        default="")
 
-parser.set_defaults(pull=False)
+    parser.add_argument('-i', '--image',
+                        help='The Docker image to use. ' +
+                        'The default is fastsolve/desktop.',
+                        default="fastsolve/desktop")
+    parser.add_argument('-t', '--tag',
+                        help='Tag of the image. The default is latest. ' +
+                        'If the image already has a tag, its tag prevails.',
+                        default="latest")
 
-parser.add_argument('notebook', nargs='?',
-                    help='The notebook to open.', default="")
+    parser.add_argument('-p', '--pull',
+                        help='Pull the latest Docker image. ' +
+                        ' The default is not to pull.',
+                        dest='pull', action='store_true')
 
-args = parser.parse_args()
-image = args.image
-user = args.user
-notebook = args.notebook
-pull = args.pull
+    parser.set_defaults(pull=False)
 
-# Append tag to image if the image has no tag
-if image.find(':') < 0:
-    image += ':' + args.tag
+    parser.add_argument('notebook', nargs='?',
+                        help='The notebook to open.', default="")
+
+    args = parser.parse_args()
+    image = args.image
+
+    # Append tag to image if the image has no tag
+    if image.find(':') < 0:
+        image += ':' + args.tag
+
+    return image, args.user, args.pull, args.notebook
 
 
 def random_ports(port, n):
@@ -112,6 +115,8 @@ if __name__ == "__main__":
     import os
     import webbrowser
     import platform
+
+    image, user, pull, notebook = parse_args(description=__doc__)
 
     pwd = os.getcwd()
     homedir = os.path.expanduser('~')
