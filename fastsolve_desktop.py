@@ -124,6 +124,52 @@ def get_screen_resolution():
     return str(width) + 'x' + str(height)
 
 
+def download_matlab(version, user, image, volumes):
+    """Download MATLAB if not yet installed"""
+
+    from getpass import getpass
+
+    installed = subprocess.check_output(["docker", "run", "--rm"] +
+                                        volumes +
+                                        [image,
+                                         'if [ -e "/usr/local/MATLAB/' +
+                                         version + '/installed" ]; ' +
+                                         'then echo "installed"; fi'])
+
+    if installed.find(b"installed") < 0:
+        print("Downloading MATLAB...")
+        bb_user = input("Enter your Bitbucket Username: ")
+        bb_token = getpass("Enter your Bitbucket Token: ")
+
+        try:
+            cmd = "curl -s \"https://" + bb_user + ":" + bb_token + "@" + \
+                "bitbucket.org/numgeom/matlab-desktop/get/" + version + \
+                ".zip\" | bsdtar zxf - -C /tmp --strip-components 1 " + \
+                "'*/url' && " + "curl -L \"$(cat /tmp/url)\" | " + \
+                "tar zxf - -C /usr/local --delay-directory-restore " + \
+                "--warning=no-unknown-keyword --strip-components 2 && " + \
+                "curl -s \"https://" + bb_user + ":" + bb_token + "@" + \
+                "bitbucket.org/numgeom/matlab-desktop/get/licenses.zip" + \
+                "\" | " + "bsdtar zxf - -C /usr/local/MATLAB/" + version +\
+                " --strip-components 1 && " + \
+                "chown -R " + user + ":" + user + \
+                " /usr/local/MATLAB/" + version + "/licenses && " + \
+                "chown -R " + user + ":" + user + \
+                " /home/" + user + "/.matlab && " + \
+                "touch /usr/local/MATLAB/" + version + "/installed"
+
+            err = subprocess.call(["docker", "run", "--rm"] +
+                                  volumes +
+                                  ["-w", "/home/" + user + "/shared",
+                                   image, "sudo bash -c '" + cmd + "'"])
+        except BaseException:
+            err = -1
+
+        if err:
+            print("Failed to download MATLAB.")
+            sys.exit(err)
+
+
 def handle_interrupt():
     """Handle keyboard interrupt"""
     try:
@@ -180,11 +226,25 @@ if __name__ == "__main__":
         docker_home = subprocess.check_output(["docker", "run", "--rm", image,
                                                "echo $DOCKER_HOME"]). \
             decode('utf-8')[:-1]
+        user = docker_home[6:]
+
+    # Create .gitconfig if not exist
+    if not os.path.isfile(homedir + "/.gitconfig"):
+        with open(homedir + "/.gitconfig") as f:
+            pass
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
                "-v", "fastsolve_src:" + docker_home + "/fastsolve",
                "-v", "fastsolve_config:" + docker_home + "/.config",
-               "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh"]
+               "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh",
+               "-v", homedir + "/.gitconfig" +
+               ":" + docker_home + "/.gitconfig"]
+
+    if image.find('matlab') > 0:
+        volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
+                    "-v", "matlab_config:" + docker_home + "/.matlab"]
+
+        download_matlab("R2017a", user, image, volumes)
 
     print("Starting up docker image...")
     # Start the docker image in the background and pipe the stderr
