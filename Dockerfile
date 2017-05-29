@@ -44,10 +44,8 @@ RUN apt-add-repository ppa:octave/stable && \
         libopenblas-base \
         libatlas3-base \
         pstoedit \
-        octave-info && \
-    apt-get install -y --no-install-recommends \
-        python3-pip \
-        python3-dev \
+        octave-info \
+        \
         pandoc \
         ttf-dejavu && \
     apt-get clean && \
@@ -55,9 +53,14 @@ RUN apt-add-repository ppa:octave/stable && \
 
 # Install SciPy, SymPy, Pandas, and Jupyter Notebook for Python3 and Octave
 # Customize Atom for Octave and MATLAB
-RUN pip3 install -U pip \
-         setuptools && \
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3 get-pip.py && \
     pip3 install -U \
+         setuptools \
+         requests \
+         progressbar2 \
+         PyDrive \
+         \
          numpy \
          matplotlib \
          sympy \
