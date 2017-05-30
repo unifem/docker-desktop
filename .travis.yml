@@ -28,8 +28,8 @@ script:
      (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
       touch success)'
   # Test startup scripts and trigger build of dev branch
-  - './fastsolve_desktop.py -d && docker stop $(docker ps -q) &&
-     ./fastsolve_jupyter.py -d && docker stop $(docker ps -q) &&
+  - './fastsolve_desktop.py -d -n && docker stop $(docker ps -q) &&
+     ./fastsolve_jupyter.py -d -n && docker stop $(docker ps -q) &&
      ([[ ! -f success ]] || docker push fastsolve/desktop) &&
      ([[ ! -f success ]] ||
        (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
@@ -37,4 +37,3 @@ script:
        git commit --allow-empty -m "Trigger compilation." &&
        git push))'
   - docker images
-  - travis_terminate $TRAVIS_TEST_RESULT

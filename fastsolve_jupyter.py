@@ -50,7 +50,10 @@ def parse_args(description):
     parser.add_argument('notebook', nargs='?',
                         help='The notebook to open.', default="")
 
-    args = parser.parse_args()
+    parser.add_argument('-n', '--no-browser',
+                        help='Do not start web browser',
+                        action='store_true',
+                        default=False)
 
     args = parser.parse_args()
 
@@ -126,11 +129,23 @@ if __name__ == "__main__":
     pwd = os.getcwd()
     homedir = os.path.expanduser('~')
     if platform.system() == "Linux":
+        if subprocess.check_output(['groups']).find(b'docker') < 0:
+            print('You are not a member of the docker group. Please add')
+            print('yourself to the docker group using the following command:')
+            print('   sudo addgroup $USER docker')
+            print('Then, log out and log back in before you can use Docker.')
+            sys.exit(-1)
         uid = str(os.getuid())
     else:
         uid = ""
 
-    img = subprocess.check_output(['docker', 'images', '-q', args.image])
+    try:
+        img = subprocess.check_output(['docker', 'images', '-q', args.image])
+    except:
+        print("Docker failed. Please make sure docker was properly " +
+              "installed and has been started.")
+        sys.exit(-1)
+
     if args.pull or not img:
         try:
             err = subprocess.call(["docker", "pull", args.image])
@@ -165,9 +180,14 @@ if __name__ == "__main__":
     volumes = ["-v", pwd + ":" + docker_home + "/shared"]
 
     print("Starting up docker image...")
+    if subprocess.check_output(["docker", "--version"]). \
+            find(b"Docker version 1.") >= 0:
+        rmflag = "-t"
+    else:
+        rmflag = "--rm"
 
     # Start the docker image in the background and pipe the stderr
-    subprocess.call(["docker", "run", "-d", "--rm", "--name", container,
+    subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_http + ":" + port_http,
                      "--env", "HOST_UID=" + uid] +
                     volumes +
@@ -211,7 +231,10 @@ if __name__ == "__main__":
                         print("Copy/paste this URL into your browser " +
                               "when you connect for the first time:")
                         print("    ", url)
-                        webbrowser.open(url)
+
+                        if not args.no_browser:
+                            webbrowser.open(url)
+
                         p.stdout.close()
                         p.terminate()
                         wait_for_url = False

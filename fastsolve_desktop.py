@@ -58,6 +58,11 @@ def parse_args(description):
                         action='store_true',
                         default=False)
 
+    parser.add_argument('-n', '--no-browser',
+                        help='Do not start web browser',
+                        action='store_true',
+                        default=False)
+
     args = parser.parse_args()
 
     # Append tag to image if the image has no tag
@@ -130,16 +135,19 @@ def wait_net_service(port, timeout=30):
 def get_screen_resolution():
     """Obtain the local screen resolution."""
 
-    if sys.version_info.major > 2:
-        import tkinter as tk
-    else:
-        import Tkinter as tk
+    try:
+        if sys.version_info.major > 2:
+            import tkinter as tk
+        else:
+            import Tkinter as tk
 
-    root = tk.Tk()
-    root.withdraw()
-    width, height = root.winfo_screenwidth(), root.winfo_screenheight()
+        root = tk.Tk()
+        root.withdraw()
+        width, height = root.winfo_screenwidth(), root.winfo_screenheight()
 
-    return str(width) + 'x' + str(height)
+        return str(width) + 'x' + str(height)
+    except:
+        return "1440x900"
 
 
 def download_matlab(version, user, image, volumes):
@@ -212,11 +220,23 @@ if __name__ == "__main__":
     pwd = os.getcwd()
     homedir = os.path.expanduser('~')
     if platform.system() == "Linux":
+        if subprocess.check_output(['groups']).find(b'docker') < 0:
+            print('You are not a member of the docker group. Please add')
+            print('yourself to the docker group using the following command:')
+            print('   sudo addgroup $USER docker')
+            print('Then, log out and log back in before you can use Docker.')
+            sys.exit(-1)
         uid = str(os.getuid())
     else:
         uid = ""
 
-    img = subprocess.check_output(['docker', 'images', '-q', args.image])
+    try:
+        img = subprocess.check_output(['docker', 'images', '-q', args.image])
+    except:
+        print("Docker failed. Please make sure docker was properly " +
+              "installed and has been started.")
+        sys.exit(-1)
+
     if args.pull or not img:
         try:
             err = subprocess.call(["docker", "pull", args.image])
@@ -275,10 +295,22 @@ if __name__ == "__main__":
         download_matlab("R2017a", user, args.image, volumes)
 
     print("Starting up docker image...")
+    if subprocess.check_output(["docker", "--version"]). \
+            find(b"Docker version 1.") >= 0:
+        rmflag = "-t"
+    else:
+        rmflag = "--rm"
+
+    # Determine size of the desktop
+    if args.size:
+        size = get_screen_resolution()
+    else:
+        size = args.size
+
     # Start the docker image in the background and pipe the stderr
-    subprocess.call(["docker", "run", "-d", "--rm", "--name", container,
+    subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_vnc + ":6080",
-                     "--env", "RESOLUT=" + get_screen_resolution(),
+                     "--env", "RESOLUT=" + size,
                      "--env", "HOST_UID=" + uid] +
                     volumes +
                     ["-w", docker_home + "/shared",
@@ -314,8 +346,10 @@ if __name__ == "__main__":
                                                   ':' + port_vnc + "/")
                         sys.stdout.write(url)
 
-                        wait_net_service(int(port_vnc))
-                        webbrowser.open(url[ind:-1])
+                        if not args.no_browser:
+                            wait_net_service(int(port_vnc))
+                            webbrowser.open(url[ind:-1])
+
                         p.stdout.close()
                         p.terminate()
                         wait_for_url = False
