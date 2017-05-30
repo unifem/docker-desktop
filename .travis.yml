@@ -2,6 +2,7 @@ os: linux
 dist: trusty
 sudo: required
 language: python
+services: docker
 
 before_install:
   # Start up xvfb
