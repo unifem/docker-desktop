@@ -19,6 +19,5 @@ script:
      git clone -b dev-matlab https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev-matlab 2> /dev/null &&
      cd dev-matlab &&
      git commit --allow-empty -m "Trigger compilation." &&
-     sleep 60 &&
      git push'
   - docker images
