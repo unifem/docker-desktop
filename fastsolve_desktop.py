@@ -58,6 +58,11 @@ def parse_args(description):
                         action='store_true',
                         default=False)
 
+    parser.add_argument('-s', '--size',
+                        help='Size of the screen. The default is to obtaion ' +
+                        'the size of the current screen.',
+                        default="")
+
     parser.add_argument('-n', '--no-browser',
                         help='Do not start web browser',
                         action='store_true',
