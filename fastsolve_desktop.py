@@ -39,19 +39,32 @@ def parse_args(description):
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
-                        ' The default is not to pull.',
-                        dest='pull', action='store_true')
+                        'The default is not to pull.',
+                        action='store_true',
+                        default=False)
 
-    parser.set_defaults(pull=False)
+    parser.add_argument('-r', '--reset',
+                        help='Reset configurations to default.',
+                        action='store_true',
+                        default=False)
+
+    parser.add_argument('-c', '--clear',
+                        help='Clear the source tree by re-cloning it.',
+                        action='store_true',
+                        default=False)
+
+    parser.add_argument('-d', '--detach',
+                        help='Run in background and print container id',
+                        action='store_true',
+                        default=False)
 
     args = parser.parse_args()
-    image = args.image
 
     # Append tag to image if the image has no tag
-    if image.find(':') < 0:
-        image += ':' + args.tag
+    if args.image.find(':') < 0:
+        args.image += ':' + args.tag
 
-    return image, args.user, args.pull
+    return args
 
 
 def random_ports(port, n):
@@ -175,7 +188,7 @@ def download_matlab(version, user, image, volumes):
             sys.exit(err)
 
 
-def handle_interrupt():
+def handle_interrupt(container):
     """Handle keyboard interrupt"""
     try:
         print("Press Ctrl-C again to stop the server: ")
@@ -194,7 +207,7 @@ if __name__ == "__main__":
     import webbrowser
     import platform
 
-    image, user, pull = parse_args(description=__doc__)
+    args = parse_args(description=__doc__)
 
     pwd = os.getcwd()
     homedir = os.path.expanduser('~')
@@ -203,10 +216,10 @@ if __name__ == "__main__":
     else:
         uid = ""
 
-    img = subprocess.check_output(['docker', 'images', '-q', image])
-    if pull or not img:
+    img = subprocess.check_output(['docker', 'images', '-q', args.image])
+    if args.pull or not img:
         try:
-            err = subprocess.call(["docker", "pull", image])
+            err = subprocess.call(["docker", "pull", args.image])
         except BaseException:
             err = -1
 
@@ -227,10 +240,11 @@ if __name__ == "__main__":
     if not os.path.exists(homedir + "/.ssh"):
         os.mkdir(homedir + "/.ssh")
 
-    if user:
-        docker_home = "/home/" + user
+    if args.user:
+        docker_home = "/home/" + args.user
     else:
-        docker_home = subprocess.check_output(["docker", "run", "--rm", image,
+        docker_home = subprocess.check_output(["docker", "run", "--rm",
+                                               args.image,
                                                "echo $DOCKER_HOME"]). \
             decode('utf-8')[:-1]
         user = docker_home[6:]
@@ -240,6 +254,13 @@ if __name__ == "__main__":
         with open(homedir + "/.gitconfig") as f:
             pass
 
+    if args.reset:
+        subprocess.check_output(["docker", "volume", "rm", "-f",
+                                 "fastsolve_config"])
+    if args.clear:
+        subprocess.check_output(["docker", "volume", "rm", "-f",
+                                 "fastsolve_src"])
+
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
                "-v", "fastsolve_src:" + docker_home + "/fastsolve",
                "-v", "fastsolve_config:" + docker_home + "/.config",
@@ -247,11 +268,11 @@ if __name__ == "__main__":
                "-v", homedir + "/.gitconfig" +
                ":" + docker_home + "/.gitconfig"]
 
-    if image.find('matlab') > 0:
+    if args.image.find('matlab') > 0:
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
                     "-v", "matlab_config:" + docker_home + "/.matlab"]
 
-        download_matlab("R2017a", user, image, volumes)
+        download_matlab("R2017a", user, args.image, volumes)
 
     print("Starting up docker image...")
     # Start the docker image in the background and pipe the stderr
@@ -261,7 +282,8 @@ if __name__ == "__main__":
                      "--env", "HOST_UID=" + uid] +
                     volumes +
                     ["-w", docker_home + "/shared",
-                     image, "startvnc.sh >> " + docker_home + "/.log/vnc.log"])
+                     args.image,
+                     "startvnc.sh >> " + docker_home + "/.log/vnc.log"])
 
     wait_for_url = True
 
@@ -301,6 +323,11 @@ if __name__ == "__main__":
                     else:
                         sys.stdout.write(stdout_line)
 
+            if args.detach:
+                print('Started container ' + container + ' in background.')
+                print('To stop it, use "docker stop ' + container + '".')
+                sys.exit(0)
+
             print("Press Ctrl-C to stop the server.")
 
             # Wait till the container exits or Ctlr-C is pressed
@@ -316,10 +343,10 @@ if __name__ == "__main__":
                     sys.exit(-1)
                 time.sleep(1)
             except KeyboardInterrupt:
-                handle_interrupt()
+                handle_interrupt(container)
 
             continue
         except KeyboardInterrupt:
-            handle_interrupt()
+            handle_interrupt(container)
         except OSError:
             sys.exit(-1)
