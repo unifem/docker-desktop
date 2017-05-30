@@ -37,3 +37,4 @@ script:
        git commit --allow-empty -m "Trigger compilation." &&
        git push))'
   - docker images
+  - travis_terminate $TRAVIS_TEST_RESULT
