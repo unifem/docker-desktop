@@ -13,8 +13,8 @@ script:
       touch success)'
 # Trigger build of dev branch
   - '[ ! -f success ] ||
-     git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
-     cd dev &&
-     git commit --allow-empty -m "Trigger compilation." &&
-     git push'
+     (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
+      cd dev &&
+      git commit --allow-empty -m "Trigger compilation." &&
+      git push)'
   - docker images
