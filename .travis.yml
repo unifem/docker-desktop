@@ -1,21 +1,18 @@
+os: linux
+dist: trusty
+sudo: required
 language: python
 services: docker
 
-matrix:
-  include:
-    - os: linux
-      dist: trusty
-      sudo: required
-    - os: mac
-
 before_install:
   # Start up xvfb
-  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid
-     --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16; fi'
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid
+     --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
 
 before_script:
-  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0; fi'
-  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start; fi'
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 
 script:
   - docker --version
@@ -25,12 +22,12 @@ script:
         -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
             grep -e Dockerfile -e .travis.yml)" ]] ||
      (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
-      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker push fastsolve/desktop; fi &&
+      docker push fastsolve/desktop &&
       touch success)'
   # Test startup scripts and trigger build of dev branch
   - './fastsolve_desktop.py -d -n -t latest && docker stop $(docker ps -q) &&
      ./fastsolve_jupyter.py -d -n -t latest && docker stop $(docker ps -q) &&
-     ([[ "$TRAVIS_OS_NAME" == "mac" || ! -f success ]] ||
+     ([[ ! -f success ]] ||
        (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
        cd dev &&
        git commit --allow-empty -m "Trigger compilation." &&
