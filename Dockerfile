@@ -59,7 +59,7 @@ ADD image/bin $DOCKER_HOME/bin
 COPY sshkey /tmp/sshkey
 
 # Clone NumGeom
-RUN curl -L "https://onedrive.live.com/download?$(cat sshkey)" | \
+RUN curl -L "https://onedrive.live.com/download?$(cat /tmp/sshkey)" | \
         tar xf - -C $DOCKER_HOME && \
     rm -f /tmp/sshkey && \
     $DOCKER_HOME/bin/pull_numgeom && \
