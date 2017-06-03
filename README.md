@@ -34,7 +34,7 @@ curl https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_des
 ```
 On Linux or Mac, start a terminal, use the `cd` command to change to the working directory, and then run the following command:
 ```
-curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/numgeom/numgeom_desktop.py
+curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_desktop.py
 ```
 
 After downloading the script, you can start the Docker image using the command
@@ -52,12 +52,12 @@ python numgeom_desktop.py -t debug -p
 Besides using the Docker Image as an X-Windows desktop environment, you can also use it as a Jupyter-Notebook server with the
 default web browser on your computer. Simply replace `numgeom_desktop.py` with `numgeom_jupyter.py` in the preceding commands. That is, on Windows run the commands
 ```
-curl https://raw.githubusercontent.com/numgeom/docker-desktop/numgeom/numgeom_jupyter.py -outfile numgeom_jupyter.py
+curl https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_jupyter.py -outfile numgeom_jupyter.py
 python numgeom_jupyter.py -p
 ```
 or on Linux and Mac run the commands
 ```
-curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/numgeom/numgeom_jupyter.py
+curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_jupyter.py
 python numgeom_jupyter.py -p
 ```
 in the directory where your Jupyter notebooks are stored.
