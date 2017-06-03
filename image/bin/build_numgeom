@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd $DOCKER_HOME/numgeom && octave --eval 'build_numgeom'
+

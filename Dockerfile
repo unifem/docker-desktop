@@ -1,10 +1,10 @@
-# Builds a Docker image for FastSolve development environment
+# Builds a Docker image for NumGeom development environment
 # with Ubuntu 16.04, Octave, Python3, Jupyter Notebook and Atom
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-FROM fastsolve/desktop:latest
+FROM numgeom/desktop:latest
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
@@ -55,29 +55,20 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         clang-format && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-USER $DOCKER_USER
+ADD image/bin $DOCKER_HOME/bin
+COPY sshkey /tmp/sshkey
 
-# Clone ilupack4m, paracoder, and petsc4m
-RUN rm -f $DOCKER_HOME/.octaverc && \
-    mkdir -p $DOCKER_HOME/fastsolve && \
-    cd $DOCKER_HOME/fastsolve && \
-    git clone https://github.com/fastsolve/ilupack4m && \
-    cd ilupack4m/makefiles && make TARGET=Octave && \
+# Clone NumGeom
+RUN curl -L "https://onedrive.live.com/download?$(cat sshkey)" | \
+        tar xf - -C $DOCKER_HOME && \
+    rm -f /tmp/sshkey && \
+    $DOCKER_HOME/bin/pull_numgeom && \
+    $DOCKER_HOME/bin/build_numgeom && \
     \
-    cd $DOCKER_HOME/fastsolve && \
-    git clone https://github.com/fastsolve/paracoder && \
-    cd paracoder && octave --eval "build_m2c -force" && \
-    \
-    cd $DOCKER_HOME/fastsolve && \
-    git clone https://github.com/fastsolve/petsc4m && \
-    cd petsc4m && octave --eval "build_petsc -force" && \
-    \
-    echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
+    rm -f $DOCKER_HOME/.octaverc && \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "@atom $DOCKER_HOME/fastsolve" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+    echo "@atom $DOCKER_HOME/numgeom" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    \
+    chown -R $DOCKER_USER:$DOCKER_USER $DOCKER_HOME
 
-WORKDIR $DOCKER_HOME/fastsolve
-USER root
+WORKDIR $DOCKER_HOME/numgeom
