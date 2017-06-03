@@ -152,7 +152,7 @@ def get_screen_resolution():
 
         return str(width) + 'x' + str(height)
     except:
-        return "1440x900"
+        return ""
 
 
 def download_matlab(version, user, image, volumes):
@@ -191,8 +191,7 @@ def download_matlab(version, user, image, volumes):
 
             err = subprocess.call(["docker", "run", "--rm"] +
                                   volumes +
-                                  ["-w", "/home/" + user + "/shared",
-                                   image, "sudo bash -c '" + cmd + "'"])
+                                  [image, "sudo bash -c '" + cmd + "'"])
         except BaseException:
             err = -1
 
@@ -307,8 +306,12 @@ if __name__ == "__main__":
         rmflag = "--rm"
 
     # Determine size of the desktop
-    if args.size:
+    if not args.size:
         size = get_screen_resolution()
+        if not size:
+            # Set default size and disable webbrowser
+            size = "1440x900"
+            args.no_browser = True
     else:
         size = args.size
 
@@ -318,7 +321,7 @@ if __name__ == "__main__":
                      "--env", "RESOLUT=" + size,
                      "--env", "HOST_UID=" + uid] +
                     volumes +
-                    ["-w", docker_home + "/shared",
+                    ["-w", docker_home + "/fastsolve",
                      args.image,
                      "startvnc.sh >> " + docker_home + "/.log/vnc.log"])
 
