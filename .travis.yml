@@ -17,21 +17,6 @@ before_script:
   - '[[ "$XVFB" != "1" ]] || export DISPLAY=:99.0 && sh -e /etc/init.d/xvfb start'
 
 script:
-  - docker --version
-  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  # Build only if the commit range of a push contains Dockerfile or .travis.yml
-  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
-        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
-            grep -e Dockerfile -e .travis.yml)" ]] || [[ "$XVFB" != "1" ]] ||
-     (docker build --tag numgeom/desktop:16.04 --tag numgeom/desktop:latest . &&
-      docker push numgeom/desktop &&
-      touch success)'
   # Test startup scripts and trigger build of dev branch
-  - './numgeom_desktop.py -d -n -t latest && docker stop $(docker ps -q) &&
-     ./numgeom_jupyter.py -d -n -t latest && docker stop $(docker ps -q) &&
-     ([[ ! -f success ]] ||
-       (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git dev 2> /dev/null &&
-       cd dev &&
-       git commit --allow-empty -m "Trigger compilation." &&
-       git push))'
-  - docker images
+  - ./numgeom_desktop.py -d -n && docker stop $(docker ps -q)
+  -  ./numgeom_jupyter.py -d -n && docker stop $(docker ps -q)
