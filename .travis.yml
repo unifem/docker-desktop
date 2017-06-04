@@ -19,4 +19,4 @@ before_script:
 script:
   # Test startup scripts and trigger build of dev branch
   - ./numgeom_desktop.py -d -n && docker stop $(docker ps -q)
-  -  ./numgeom_jupyter.py -d -n && docker stop $(docker ps -q)
+  - ./numgeom_jupyter.py -d -n && docker stop $(docker ps -q)
