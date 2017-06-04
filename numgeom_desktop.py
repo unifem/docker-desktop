@@ -307,6 +307,9 @@ if __name__ == "__main__":
                "-v", homedir + "/.gitconfig" +
                ":" + docker_home + "/.gitconfig"]
 
+    if args.tag == "dev":
+        volumes += ["-v", "fastsolve_src:" + docker_home + "/fastsolve"]
+
     if args.volume:
         volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
                     "-w", docker_home + "/" + APP]
