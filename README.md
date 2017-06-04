@@ -37,14 +37,19 @@ On Linux or Mac, start a terminal, use the `cd` command to change to the working
 curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_desktop.py
 ```
 
-After downloading the script, you can start the Docker image using the command
+After downloading the script, you can start the Docker image with NumGeom for Octave using the command
 ```
 python numgeom_desktop.py -p
 ```
 This will download and run the Docker image and then launch your default web browser to show the desktop environment. The `-p` option is optional, and it instructs the Python script to pull and update the image to the latest version.
 
+For NumGeom developers, you can start the Docker image with `MATLAB` using the command
+```
+python numgeom_desktop.py -p -m
+```
+where the `-m` option would initiate installation of MATLAB. It will prompt you to enter your Bitbucket username and password for authentication. After the desktop launches, you may be asked to activate Matlab using your Mathworks account.
 
-To see additional options, use the command
+For additional command-line options, use the command
 ```
 python numgeom_desktop.py -h
 ```
