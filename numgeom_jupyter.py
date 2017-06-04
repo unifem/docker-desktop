@@ -35,9 +35,9 @@ def parse_args(description):
                         default=APP + "/desktop")
 
     parser.add_argument('-t', '--tag',
-                        help='Tag of the image. The default is dev. ' +
+                        help='Tag of the image. The default is latest. ' +
                         'If the image already has a tag, its tag prevails.',
-                        default="dev")
+                        default="latest")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
