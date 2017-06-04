@@ -102,7 +102,7 @@ RUN $DOCKER_HOME/bin/pull_numgeom && \
     \
     rm -f $DOCKER_HOME/.octaverc && \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "@atom $DOCKER_HOME/numgeom" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
+    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
 
 WORKDIR $DOCKER_HOME/numgeom
 USER root
