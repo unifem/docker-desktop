@@ -4,15 +4,10 @@ services: docker
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
+  - echo $MATLAB_URL > url
   - 'docker build --tag numgeom/desktop:dev . &&
      docker push numgeom/desktop:dev &&
      touch success'
-# Trigger build of dev-matlab branch
-  - '[[ ! -f success ]] ||
-     (git clone -b dev-matlab https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git dev-matlab 2> /dev/null &&
-      cd dev-matlab &&
-      git commit --allow-empty -m "Trigger compilation." &&
-      git push && cd ..)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/numgeom/docker-desktop.git master 2> /dev/null &&
