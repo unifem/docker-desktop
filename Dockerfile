@@ -18,7 +18,14 @@ USER $DOCKER_USER
 ###############################################################
 # Temporarily install MATLAB and build NumGeom for Octave and MATLAB
 ###############################################################
-RUN $DOCKER_HOME/bin/pull_numgeom && \
+RUN mkdir -p $DOCKER_HOME/.config/numgeom && \
+    echo "
+    addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack
+    run $DOCKER_HOME/fastsolve/paracoder/load_m2c.m
+    run $DOCKER_HOME/fastsolve/petsc4m/load_petsc.m
+    " > $DOCKER_HOME/.config/numgeom/startup.m && \
+    \
+    $DOCKER_HOME/bin/pull_numgeom && \
     $DOCKER_HOME/bin/build_numgeom
 
     # curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
