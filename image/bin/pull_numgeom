@@ -6,24 +6,10 @@ if [ -e "numgeom/.git" ]; then
     echo "NumGeom was already cloned. Pulling from repository"
 
     cd $DOCKER_HOME/numgeom
-    git pull --recurse-submodules
+    git pull
 else
     cd $DOCKER_HOME
     # Remove octave-workspace if it exists
     rm -f numgeom/octave-workspace
     git clone git@bitbucket.org:numgeom/numgeom.git
-
-    # Checkout submodule ParaCoder if previous command was successful
-    if [ $? -eq 0 ]; then
-        cd numgeom
-        git submodule init
-        git submodule update
-
-        # Checkout submodules of ParaCoder
-        cd ParaCoder
-        git checkout master
-        git submodule init
-        git submodule update
-        git submodule foreach git checkout master
-    fi
 fi
