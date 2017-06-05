@@ -5,5 +5,5 @@ cd $DOCKER_HOME/numgeom
 if [[ -z "$1" || "$1" == "-octave" ]]; then
   octave --eval "build_numgeom"
 else
-  octave --eval "source $DOCKER_HOME/fastsolve/paracoder/.octaverc; build_numgeom -matlab"
+  octave --eval "build_numgeom -matlab"
 fi

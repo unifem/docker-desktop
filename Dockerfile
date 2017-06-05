@@ -23,7 +23,7 @@ RUN $DOCKER_HOME/bin/pull_numgeom && \
     \
     curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
-    $DOCKER_HOME/bin/build_numgeom --matlab && \
+    $DOCKER_HOME/bin/build_numgeom -matlab && \
     sudo rm -rf /usr/local/MATLAB/R*
 
 WORKDIR $DOCKER_HOME/numgeom
