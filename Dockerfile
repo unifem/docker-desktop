@@ -18,7 +18,8 @@ USER $DOCKER_USER
 ###############################################################
 # Temporarily install MATLAB and build NumGeom for Octave and MATLAB
 ###############################################################
-RUN mkdir -p $DOCKER_HOME/.config/numgeom && \
+RUN rm -f $DOCKER_HOME/.octaverc && \
+    mkdir -p $DOCKER_HOME/.config/numgeom && \
     echo "
     addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack
     run $DOCKER_HOME/fastsolve/paracoder/load_m2c.m
