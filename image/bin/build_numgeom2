@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NUMGEOM_HOME=$DOCKER_HOME/numgeom
+NUMGEOM_HOME=$DOCKER_HOME/numgeom2
 
 cd $NUMGEOM_HOME
 

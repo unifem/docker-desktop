@@ -16,7 +16,7 @@ RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 USER $DOCKER_USER
 
 ###############################################################
-# Temporarily install MATLAB and build NumGeom for Octave and MATLAB
+# Build NumGeom for Octave
 ###############################################################
 RUN rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/numgeom && \
@@ -27,11 +27,16 @@ RUN rm -f $DOCKER_HOME/.octaverc && \
     " > $DOCKER_HOME/.config/numgeom/startup.m && \
     \
     $DOCKER_HOME/bin/pull_numgeom && \
-    $DOCKER_HOME/bin/build_numgeom
+    $DOCKER_HOME/bin/build_numgeom && \
+    \
+    $DOCKER_HOME/bin/pull_numgeom2
 
+    # $DOCKER_HOME/bin/build_numgeom2 && \
+    # \
     # curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     # MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
     # $DOCKER_HOME/bin/build_numgeom -matlab && \
+    # $DOCKER_HOME/bin/build_numgeom2 -matlab && \
     # sudo rm -rf /usr/local/MATLAB/R*
 
 WORKDIR $DOCKER_HOME/numgeom

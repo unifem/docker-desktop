@@ -1,0 +1,36 @@
+#!/bin/bash
+
+NUMGEOM_HOME=$DOCKER_HOME/numgeom2
+
+if [ -e "$NUMGEOM_HOME/ahf-plus/.git" ]; then
+    echo "AHF+ was already cloned. Pulling from repository"
+
+    cd $NUMGEOM_HOME/ahf-plus
+    git pull
+else
+    # Remove octave-workspace if it exists
+    rm -f $NUMGEOM_HOME/ahf-plus/octave-workspace
+    git clone git@bitbucket.org:numgeom/ahf.git $NUMGEOM_HOME/ahf-plus
+fi
+
+if [ -e "$NUMGEOM_HOME/glp/.git" ]; then
+    echo "GLP was already cloned. Pulling from repository"
+
+    cd $NUMGEOM_HOME/glp
+    git pull
+else
+    # Remove octave-workspace if it exists
+    rm -f $NUMGEOM_HOME/glp/octave-workspace
+    git clone git@bitbucket.org:numgeom/glp.git $NUMGEOM_HOME/glp
+fi
+
+if [ -e "$NUMGEOM_HOME/mexcgns/.git" ]; then
+    echo "mexcgns was already cloned. Pulling from repository"
+
+    cd $NUMGEOM_HOME/mexcgns
+    git pull
+else
+    # Remove octave-workspace if it exists
+    rm -f $NUMGEOM_HOME/mexcgns/octave-workspace
+    git clone git@github.com:numgeom/mexcgns.git $NUMGEOM_HOME/mexcgns
+fi
