@@ -19,10 +19,10 @@ USER $DOCKER_USER
 ###############################################################
 RUN rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/numgeom && \
-    echo "
-    addpath /usr/local/ilupack4m/matlab/ilupack
-    run /usr/local/paracoder/load_m2c.m
-    run /usr/local/petsc4m/load_petsc.m
+    echo " \
+    addpath /usr/local/ilupack4m/matlab/ilupack\n\
+    run /usr/local/paracoder/load_m2c.m\n\
+    run /usr/local/petsc4m/load_petsc.m\n\
     " > $DOCKER_HOME/.config/numgeom/startup.m && \
     \
     curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
