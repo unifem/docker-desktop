@@ -17,7 +17,15 @@ USER $DOCKER_USER
 ###############################################################
 # Bbuild NumGeom for Octave
 ###############################################################
-RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
+RUN rm -f $DOCKER_HOME/.octaverc && \
+    mkdir -p $DOCKER_HOME/.config/numgeom && \
+    echo "
+    addpath /usr/local/ilupack4m/matlab/ilupack
+    run /usr/local/paracoder/load_m2c.m
+    run /usr/local/petsc4m/load_petsc.m
+    " > $DOCKER_HOME/.config/numgeom/startup.m && \
+    \
+    curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
     tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H bitbucket.org >> $DOCKER_HOME/.ssh/known_hosts && \
     $DOCKER_HOME/bin/pull_numgeom && \
