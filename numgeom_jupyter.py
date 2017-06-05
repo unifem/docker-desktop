@@ -13,7 +13,7 @@ import sys
 import subprocess
 import time
 
-APP = "fastsolve"
+APP = "numgeom"
 
 
 def parse_args(description):
