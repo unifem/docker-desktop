@@ -20,10 +20,10 @@ USER $DOCKER_USER
 ###############################################################
 RUN rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/numgeom && \
-    echo "
-    addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack
-    run $DOCKER_HOME/fastsolve/paracoder/load_m2c.m
-    run $DOCKER_HOME/fastsolve/petsc4m/load_petsc.m
+    echo " \
+    addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack\n\
+    run $DOCKER_HOME/fastsolve/paracoder/load_m2c.m\n\
+    run $DOCKER_HOME/fastsolve/petsc4m/load_petsc.m\n\
     " > $DOCKER_HOME/.config/numgeom/startup.m && \
     \
     $DOCKER_HOME/bin/pull_numgeom && \
