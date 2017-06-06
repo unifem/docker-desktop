@@ -1,0 +1,17 @@
+#!/bin/bash
+
+UNIFEM_HOME=$DOCKER_HOME/unifem
+
+mkdir -p $UNIFEM_HOME
+
+# if [ -e "unifem/.git" ]; then
+#     echo "Unifem was already cloned. Pulling from repository"
+#
+#     cd $DOCKER_HOME/unifem
+#     git pull
+# else
+#     cd $DOCKER_HOME
+#     # Remove octave-workspace if it exists
+#     rm -f unifem/octave-workspace
+#     git clone git@github.com:unifem/unifem.git
+# fi

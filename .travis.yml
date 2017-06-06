@@ -5,12 +5,12 @@ services: docker
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
   - echo $MATLAB_URL > url
-  - 'docker build --tag numgeom/desktop:dev . &&
-     docker push numgeom/desktop:dev &&
+  - 'docker build --tag unifem/desktop:dev . &&
+     docker push unifem/desktop:dev &&
      touch success'
 # Test scripts
   - '[[ ! -f success ]] ||
-    (git clone -b master https://github.com/numgeom/docker-desktop.git master 2> /dev/null &&
-     master/numgeom_desktop.py -d -n -t dev && docker stop $(docker ps -q) &&
-     master/numgeom_jupyter.py -d -n -t dev && docker stop $(docker ps -q))'
+    (git clone -b master https://github.com/unifem/docker-desktop.git master 2> /dev/null &&
+     master/unifem_desktop.py -d -n -t dev && docker stop $(docker ps -q) &&
+     master/unifem_jupyter.py -d -n -t dev && docker stop $(docker ps -q))'
   - docker images
