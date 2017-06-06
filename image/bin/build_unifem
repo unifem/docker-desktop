@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd $DOCKER_HOME/unifem
+
+# if [[ -z "$1" || "$1" == "-octave" ]]; then
+#   octave --eval "build_unifem"
+# else
+#   octave --eval "build_unifem -matlab"
+# fi

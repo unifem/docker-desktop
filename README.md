@@ -1,7 +1,7 @@
-# Docker Image for NumGeom
-This Docker image provides the development environment for NumGeom with Ubuntu 16.04 environment. It runs the lightweight LXDE Windows Manager, with Octave 4.0.2, Python 3.5.2  (with NumPy, SciPy, Pandas and Spyder), Jupyter Notebook and Atom preinstalled. The X Windows will display in your web browser in full-screen mode. You can use this Docker image on 64-bit Linux, Mac or Windows. It allows you to use the same programming environment regardless which OS you are running on your laptop or desktop.
+# Docker Image for Unifem
+This Docker image provides the development environment for Unifem with Ubuntu 16.04 environment. It runs the lightweight LXDE Windows Manager, with Octave 4.0.2, Python 3.5.2  (with NumPy, SciPy, Pandas and Spyder), Jupyter Notebook and Atom preinstalled. The X Windows will display in your web browser in full-screen mode. You can use this Docker image on 64-bit Linux, Mac or Windows. It allows you to use the same programming environment regardless which OS you are running on your laptop or desktop.
 
-[![Build Status](https://travis-ci.org/numgeom/docker-desktop.svg)](https://travis-ci.org/numgeom/docker-desktop) [![](https://images.microbadger.com/badges/image/numgeom/desktop.svg)](https://microbadger.com/images/numgeom/desktop)
+[![Build Status](https://travis-ci.org/unifem/docker-desktop.svg)](https://travis-ci.org/unifem/docker-desktop) [![](https://images.microbadger.com/badges/image/unifem/desktop.svg)](https://microbadger.com/images/unifem/desktop)
 
 ## Preparation
 Before you start, you need to first install Python and Docker on your computer by following the steps below.
@@ -27,55 +27,55 @@ sudo adduser $USER docker
 Then, log out and log back in before you can use Docker.
 
 ## Running the Docker Image
-To run the Docker image, first download the script [`numgeom_desktop.py`](https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_desktop.py)
+To run the Docker image, first download the script [`unifem_desktop.py`](https://raw.githubusercontent.com/unifem/docker-desktop/master/unifem_desktop.py)
 and save it to the working directory where you will store your codes and data. You can download the script using command line: On Windows, start `Windows PowerShell`, use the `cd` command to change to the working directory where you will store your codes and data, and then run the following command:
 ```
-curl https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_desktop.py -outfile numgeom_desktop.py
+curl https://raw.githubusercontent.com/unifem/docker-desktop/master/unifem_desktop.py -outfile unifem_desktop.py
 ```
 On Linux or Mac, start a terminal, use the `cd` command to change to the working directory, and then run the following command:
 ```
-curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_desktop.py
+curl -s -O https://raw.githubusercontent.com/unifem/docker-desktop/master/unifem_desktop.py
 ```
 
-After downloading the script, you can start the Docker image with NumGeom for Octave using the command
+After downloading the script, you can start the Docker image with Unifem for Octave using the command
 ```
-python numgeom_desktop.py -p
+python unifem_desktop.py -p
 ```
 This will download and run the Docker image and then launch your default web browser to show the desktop environment. The `-p` option is optional, and it instructs the Python script to pull and update the image to the latest version.
 
-For NumGeom developers, you can start the Docker image with `MATLAB` using the command
+For Unifem developers, you can start the Docker image with `MATLAB` using the command
 ```
-python numgeom_desktop.py -p -m
+python unifem_desktop.py -p -m
 ```
 where the `-m` option would initiate installation of MATLAB. It will prompt you to enter your Bitbucket username and password for authentication. After the desktop launches, you may be asked to activate MATLAB using your MathWorks account when you launch MATLAB.
 
 For additional command-line options, use the command
 ```
-python numgeom_desktop.py -h
+python unifem_desktop.py -h
 ```
 
 ### Running the Docker Image as Jupyter-Notebook Server
 Besides using the Docker Image as an X-Windows desktop environment, you can also use it as a Jupyter-Notebook server with the
-default web browser on your computer. Simply replace `numgeom_desktop.py` with `numgeom_jupyter.py` in the preceding commands. That is, on Windows run the commands
+default web browser on your computer. Simply replace `unifem_desktop.py` with `unifem_jupyter.py` in the preceding commands. That is, on Windows run the commands
 ```
-curl https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_jupyter.py -outfile numgeom_jupyter.py
-python numgeom_jupyter.py -p
+curl https://raw.githubusercontent.com/unifem/docker-desktop/master/unifem_jupyter.py -outfile unifem_jupyter.py
+python unifem_jupyter.py -p
 ```
 or on Linux and Mac run the commands
 ```
-curl -s -O https://raw.githubusercontent.com/numgeom/docker-desktop/master/numgeom_jupyter.py
-python numgeom_jupyter.py -p
+curl -s -O https://raw.githubusercontent.com/unifem/docker-desktop/master/unifem_jupyter.py
+python unifem_jupyter.py -p
 ```
 in the directory where your Jupyter notebooks are stored.
 
 ### Running the Docker Image Offline
 After you have download the Docker image using the `curl` and `python` commands above, you can run the image offline without internet connection using the following command:
 ```
-python numgeom_desktop.py
+python unifem_desktop.py
 ```
 or
 ```
-python numgeom_jupyter.py
+python unifem_jupyter.py
 ```
 in the directory where you ran the `curl` command above.
 
@@ -91,7 +91,7 @@ If your default browser is different from the above, you can manually copy and p
 
 ## Tips and Tricks
 1. By default, Docker uses two CPU cores and 2GB of memory for its images. This is sufficient for doing homework for this class. If you want to run large jobs, go to the `Advanced` tab in `Settings` (or `Preferences` for Mac) and increase the amount of memory dedicated to Docker.
-2. When using the Docker image, the files under `$HOME/numgeom`, `$HOME/.config`, `$HOME/.ssh` and `$HOME/shared` are persistent. Any change to the files in other directories will be lost when you stop the Docker image. Make sure you save all your source codes in `$HOME/numgeom` or `$HOME/shared`.
+2. When using the Docker image, the files under `$HOME/unifem`, `$HOME/.config`, `$HOME/.ssh` and `$HOME/shared` are persistent. Any change to the files in other directories will be lost when you stop the Docker image. Make sure you save all your source codes in `$HOME/unifem` or `$HOME/shared`.
 3. The `$HOME/.ssh` directory in the Docker image maps to the `.ssh` directory on your host computer. This is particularly convenient for you to use your ssh-keys for authentications with
 git repositories on github.com or bitbucket.org. To use your ssh-keys, run the `ssh-add` in a terminal to add your keys to the ssh-agent.
 4. You can copy and paste between the host and the Docker image through the `Clipboard` box in the left toolbar, which is synced automatically with the clipboard of the Docker image. To copy from the Docker image to the host, first, select the text in the Docker image, and then go to the `Clipboard` box to copy. To copy from host to the Docker image, first, paste the text into the `Clipboard` box, and then paste the text in the Docker image.
