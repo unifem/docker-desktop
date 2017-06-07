@@ -13,5 +13,5 @@ mkdir -p $UNIFEM_HOME
 #     cd $DOCKER_HOME
 #     # Remove octave-workspace if it exists
 #     rm -f unifem/octave-workspace
-#     git clone git@github.com:unifem/unifem.git
+#     git clone --depth 1 git@github.com:unifem/unifem.git
 # fi
