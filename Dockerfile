@@ -10,13 +10,30 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 ADD image/bin $DOCKER_HOME/bin
-RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
+RUN pip3 install -U \
+         numpy \
+         matplotlib \
+         sympy \
+         scipy \
+         pandas \
+         nose \
+         sphinx \
+         flufl.lock \
+         ply \
+         pytest \
+         six \
+         \
+         urllib3 \
+         \
+         spyder && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
+
+###############################################################
+# Build Unifem for Octave
+###############################################################
 USER $DOCKER_USER
 
-###############################################################
-# Bbuild Unifem for Octave
-###############################################################
 RUN rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/unifem && \
     echo " \
