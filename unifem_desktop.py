@@ -41,8 +41,8 @@ def parse_args(description):
 
     parser.add_argument('-m', '--matlab', nargs='?',
                         help='Specify MATLAB version. Supported versions ' +
-                        'include R2016b or R2017a. The default is R2016b.',
-                        const="R2016b", default="")
+                        'include R2016b or R2017a. The default is R2017a.',
+                        const="R2017a", default="")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
@@ -181,7 +181,10 @@ def download_matlab(version, user, image, volumes):
 
     if installed.find(b"installed") < 0:
         print("Downloading MATLAB...")
-        bb_user = input("Enter your Bitbucket Username: ")
+        if sys.version_info.major > 2:
+            bb_user = input("Enter your Bitbucket Username: ")
+        else:
+            bb_user = raw_input("Enter your Bitbucket Username: ")
         bb_token = getpass("Enter your Bitbucket Token: ")
 
         try:
@@ -304,7 +307,12 @@ if __name__ == "__main__":
 
     if args.tag == "dev":
         volumes += ["-v", "fastsolve_src:" + docker_home + "/fastsolve",
-                    "-v", "unifem2_src:" + docker_home + "/unifem2"]
+                    "-v", "numgeom_src:" + docker_home + "/numgeom",
+                    "-v", "numgeom2_src:" + docker_home + "/numgeom2"]
+        if args.clear:
+            subprocess.check_output(["docker", "volume", "rm", "-f", 'fastsolve_src'])
+            subprocess.check_output(["docker", "volume", "rm", "-f", 'numgeom_src'])
+            subprocess.check_output(["docker", "volume", "rm", "-f", 'numgeom2_src'])
 
     if args.volume:
         volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
