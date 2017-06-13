@@ -2,15 +2,19 @@ language: python
 
 services: docker
 
+env:
+  - BRANCH=dev
+
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - echo $MATLAB_URL > url
-  - 'docker build --tag unifem/desktop:dev . &&
-     docker push unifem/desktop:dev &&
+  - 'docker build --tag unifem/unifem:$BRANCH
+                  --build-arg SSHKEY_ID=$SSHKEY_ID
+                  --build-arg MFILE_ID=$MFILE_ID . &&
+     docker push unifem/desktop &&
      touch success'
 # Test scripts
   - '[[ ! -f success ]] ||
-    (git clone -b master https://github.com/unifem/docker-desktop.git master 2> /dev/null &&
-     master/unifem_desktop.py -d -n -t dev && docker stop $(docker ps -q) &&
-     master/unifem_jupyter.py -d -n -t dev && docker stop $(docker ps -q))'
+    (git clone -b master https://github.com/unifem/docker-desktop.git master &&
+     master/unifem_desktop.py -d -n -t $BRANCH && docker stop $(docker ps -q) &&
+     master/unifem_jupyter.py -d -n -t $BRANCH && docker stop $(docker ps -q))'
   - docker images

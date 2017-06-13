@@ -9,8 +9,11 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
-COPY url /tmp
 ADD image/bin $DOCKER_HOME/bin
+
+ARG SSHKEY_ID=secret
+ARG MFILE_ID=secret
+
 RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
 RUN pip3 install -U \
@@ -29,6 +32,7 @@ RUN pip3 install -U \
          urllib3 \
          \
          spyder && \
+    rm -rf /tmp/* && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
 ###############################################################
@@ -36,7 +40,9 @@ RUN pip3 install -U \
 ###############################################################
 USER $DOCKER_USER
 
-RUN rm -f $DOCKER_HOME/.octaverc && \
+RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
+    ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
+    rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/unifem && \
     echo " \
     addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack\n\
@@ -45,7 +51,15 @@ RUN rm -f $DOCKER_HOME/.octaverc && \
     " > $DOCKER_HOME/.config/unifem/startup.m && \
     \
     $DOCKER_HOME/bin/pull_unifem && \
-    $DOCKER_HOME/bin/build_unifem
+    $DOCKER_HOME/bin/build_unifem && \
+    rm -f $DOCKER_HOME/.ssh/id_rsa*
+
+
+    # gd-get-pub $(sh -c "echo '$MFILE_ID'") | \
+    #     sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
+    # MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
+    # sudo rm -rf /usr/local/MATLAB/R*
+
 
 WORKDIR $DOCKER_HOME/unifem
 USER root
