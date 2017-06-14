@@ -7,7 +7,7 @@ env:
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - 'docker build --tag unifem/unifem:$BRANCH
+  - 'docker build --tag unifem/desktop:$BRANCH
                   --build-arg SSHKEY_ID=$SSHKEY_ID
                   --build-arg MFILE_ID=$MFILE_ID . &&
      docker push unifem/desktop &&
