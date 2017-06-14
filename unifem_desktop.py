@@ -26,7 +26,7 @@ def parse_args(description):
 
     parser.add_argument('-u', "--user",
                         help='The username used by the image. ' +
-                        ' The default is to retrieve from image.',
+                        ' The default is ubuntu.',
                         default="")
 
     parser.add_argument('-i', '--image',
@@ -73,7 +73,7 @@ def parse_args(description):
     parser.add_argument('-v', '--volume',
                         help='A data volume to be mounted to ~/' + APP + '. ' +
                         'The default is ' + APP + '_src.',
-                        default=APP+"_src")
+                        default=APP + "_src")
 
     parser.add_argument('-n', '--no-browser',
                         help='Do not start web browser',
@@ -170,8 +170,6 @@ def get_screen_resolution():
 def download_matlab(version, user, image, volumes):
     """Download MATLAB if not yet installed"""
 
-    from getpass import getpass
-
     installed = subprocess.check_output(["docker", "run", "--rm"] +
                                         volumes +
                                         [image,
@@ -180,38 +178,53 @@ def download_matlab(version, user, image, volumes):
                                          'then echo "installed"; fi'])
 
     if installed.find(b"installed") < 0:
-        print("Downloading MATLAB...")
-        if sys.version_info.major > 2:
-            bb_user = input("Enter your Bitbucket Username: ")
-        else:
-            bb_user = raw_input("Enter your Bitbucket Username: ")
-        bb_token = getpass("Enter your Bitbucket Token: ")
-
+        # Downloading software using Google authentication
         try:
-            cmd = "curl -s \"https://" + bb_user + ":" + bb_token + "@" + \
-                "bitbucket.org/unifem/matlab-desktop/get/" + version + \
-                ".zip\" | bsdtar zxf - -C /tmp --strip-components 1 " + \
-                "'*/url' && " + "curl -L \"$(cat /tmp/url)\" | " + \
-                "tar zxf - -C /usr/local --delay-directory-restore " + \
-                "--warning=no-unknown-keyword --strip-components 2 && " + \
-                "curl -s \"https://" + bb_user + ":" + bb_token + "@" + \
-                "bitbucket.org/unifem/matlab-desktop/get/licenses.zip" + \
-                "\" | " + "bsdtar zxf - -C /usr/local/MATLAB/" + version + \
-                " --strip-components 1 && " + \
-                "chown -R " + user + ":" + user + \
-                " /usr/local/MATLAB/" + version + "/licenses && " + \
-                "chown -R " + user + ":" + user + \
-                " /home/" + user + "/.matlab && " + \
-                "touch /usr/local/MATLAB/" + version + "/installed"
+            print('Authenticating for MATLAB intallation...')
+            p = subprocess.Popen(["docker", "run", "--rm", '-ti'] + volumes +
+                                 [image, "gd-auth -n"],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
 
-            err = subprocess.call(["docker", "run", "--rm"] +
-                                  volumes +
-                                  [image, "sudo bash -c '" + cmd + "'"])
+            # Monitor the stdout to extract the URL
+            for line in iter(p.stdout.readline, ""):
+                ind = line.find("https://accounts.google.com")
+                if ind >= 0:
+                    # Open browser if found URL
+                    print('Log in with your authorized Google account in the ' +
+                          'webbrowser to get verification code.')
+                    if args.no_browser:
+                        webbrowser.open(line[ind:-1])
+                    else:
+                        print('Open browswe at URL:')
+                        print(line[ind:-1])
+
+                    sys.stdout.write('\r\nEnter verification code: ')
+                    sys.stdout.flush()
+                    break
+
+            if p.wait() != 0:
+                raise BaseException
+
+            # Downloading MATLAB software
+            print("\nDownloading MATLAB...")
+            cmd = "gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 " + version + \
+                "_glnx64_nohelp.tgz | sudo tar zxf - -C /usr/local --delay-directory-restore " + \
+                "--warning=no-unknown-keyword --strip-components 2 && " + \
+                "sudo chown -R " + user + ":" + user + \
+                " /usr/local/MATLAB/" + version + "/licenses && " + \
+                "sudo touch /usr/local/MATLAB/" + version + "/installed && " + \
+                "(gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 licenses.tgz | " + \
+                "sudo bsdtar zxf - -C /usr/local/MATLAB/" + version + " || true)"
+
+            err = subprocess.call(["docker", "run", "--rm", "-ti"] +
+                                  volumes + ["-w", "/tmp/", image, cmd])
         except BaseException:
             err = -1
 
         if err:
-            print("Failed to download MATLAB.")
+            print("Failed to download MATLAB. Please rerun " + sys.argv[0] +
+                  " with the -r option and use a valid Google account.")
             sys.exit(err)
 
 
@@ -238,6 +251,7 @@ if __name__ == "__main__":
 
     pwd = os.getcwd()
     homedir = os.path.expanduser('~')
+
     if platform.system() == "Linux":
         if subprocess.check_output(['groups']).find(b'docker') < 0:
             print('You are not a member of the docker group. Please add')
@@ -246,6 +260,10 @@ if __name__ == "__main__":
             print('Then, log out and log back in before you can use Docker.')
             sys.exit(-1)
         uid = str(os.getuid())
+        if uid == '0':
+            print('You are running as root. This is not safe. ' +
+                  'Please run as a standard user.')
+            sys.exit(-1)
     else:
         uid = ""
 
@@ -280,6 +298,7 @@ if __name__ == "__main__":
         os.mkdir(homedir + "/.ssh")
 
     if args.user:
+        user = args.user
         docker_home = "/home/" + args.user
     else:
         docker_home = subprocess.check_output(["docker", "run", "--rm",
@@ -295,12 +314,12 @@ if __name__ == "__main__":
 
     if args.reset:
         subprocess.check_output(["docker", "volume", "rm", "-f",
-                                 APP+"_config"])
+                                 APP + "_config"])
     if args.volume and args.clear:
         subprocess.check_output(["docker", "volume", "rm", "-f", args.volume])
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
-               "-v", APP+"_config:" + docker_home + "/.config",
+               "-v", APP + "_config:" + docker_home + "/.config",
                "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh",
                "-v", homedir + "/.gitconfig" +
                ":" + docker_home + "/.gitconfig"]
@@ -310,9 +329,8 @@ if __name__ == "__main__":
                     "-v", "numgeom_src:" + docker_home + "/numgeom",
                     "-v", "numgeom2_src:" + docker_home + "/numgeom2"]
         if args.clear:
-            subprocess.check_output(["docker", "volume", "rm", "-f", 'fastsolve_src'])
-            subprocess.check_output(["docker", "volume", "rm", "-f", 'numgeom_src'])
-            subprocess.check_output(["docker", "volume", "rm", "-f", 'numgeom2_src'])
+            subprocess.check_output(["docker", "volume", "rm", "-f",
+                                     'fastsolve_src', 'numgeom_src', 'numgeom2_src'])
 
     if args.volume:
         volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
