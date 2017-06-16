@@ -80,7 +80,8 @@ def parse_args(description):
                         help='All the arguments after -a will be passed to the ' +
                         '"docker run" command. Useful for specifying ' +
                         'resources and environment variables.',
-                        nargs=argparse.REMAINDER)
+                        nargs=argparse.REMAINDER,
+                        default=[])
 
     args = parser.parse_args()
 
