@@ -315,8 +315,7 @@ if __name__ == "__main__":
                                  "$DOCKER_HOME/.config/git/config)"])
 
     if args.matlab:
-        volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
-                    "-v", "matlab_config:" + docker_home + "/.matlab"]
+        volumes += ["-v", "matlab_bin:/usr/local/MATLAB/"]
 
         download_matlab(args.matlab, user, args.image, volumes)
 
@@ -336,7 +335,6 @@ if __name__ == "__main__":
         if args.clear:
             subprocess.check_output(["docker", "volume", "rm", "-f",
                                      'fastsolve_src', 'numgeom_src', 'numgeom2_src'])
-
 
     print("Starting up docker image...")
     if subprocess.check_output(["docker", "--version"]). \
