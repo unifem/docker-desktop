@@ -35,8 +35,8 @@ USER $DOCKER_USER
 RUN rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/unifem && \
     echo " \
-    addpath /usr/local/ilupack4m/matlab/ilupack\n\
     run /usr/local/paracoder/load_m2c.m\n\
+    run /usr/local/ilupack4m/load_milu.m\n\
     run /usr/local/petsc4m/load_petsc.m\n\
     " > $DOCKER_HOME/.config/unifem/startup.m && \
     \
