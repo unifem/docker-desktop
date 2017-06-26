@@ -24,9 +24,7 @@ RUN pip3 install -U \
          pytest \
          six \
          \
-         urllib3 \
-         \
-         spyder && \
+         urllib3 && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
 ###############################################################
