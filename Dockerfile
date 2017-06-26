@@ -14,9 +14,10 @@ ADD image/bin $DOCKER_HOME/bin
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
 
-RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
-
-RUN pip3 install -U \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+         libnss3 && \
+    pip3 install -U \
          numpy \
          matplotlib \
          sympy \
@@ -31,8 +32,9 @@ RUN pip3 install -U \
          \
          urllib3 \
          \
+         PyQt5 \
          spyder && \
-    rm -rf /tmp/* && \
+    rm -rf /var/lib/apt/lists/* /tmp/* && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
 ###############################################################
