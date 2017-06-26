@@ -40,7 +40,7 @@ RUN pip3 install -U \
 ###############################################################
 USER $DOCKER_USER
 
-RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
+RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/unifem && \
