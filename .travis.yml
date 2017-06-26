@@ -15,6 +15,6 @@ script:
      (docker build --tag unifem/desktop:latest . &&
       docker push unifem/desktop &&
       touch success)'
-  - ./unifem_desktop.py -d -n -t latest && docker stop $(docker ps -q)
-  - ./unifem_jupyter.py -d -n -t latest && docker stop $(docker ps -q)
+  - ./unifem_desktop.py -d -n -t latest && sleep 10 && docker stop $(docker ps -q)
+  - ./unifem_jupyter.py -d -n -t latest && sleep 10 && docker stop $(docker ps -q)
   - docker images
