@@ -1,19 +1,26 @@
 os: linux
 dist: trusty
-sudo: required
 language: python
 services: docker
 
-script:
+env:
+  global:
+    - BASE=numgeom/desktop:latest
+
+before_script:
   - docker --version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
+  - docker pull $BASE
+
+script:
   # Build only if the commit range of a push is not empty and contains Dockerfile or .travis.yml
   - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
+        -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
         -n "$(git diff --name-only $TRAVIS_COMMIT_RANGE)" &&
         -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
-            grep -e Dockerfile -e .travis.yml)" ]] ||
+            grep -e Dockerfile -e .travis.yml -e image)" ]] ||
      (docker build --tag unifem/desktop:latest . &&
-      docker push unifem/desktop &&
+      docker push unifem/desktop:latest &&
       touch success)'
   - ./unifem_desktop.py -d -n -t latest && sleep 10 && docker stop $(docker ps -q)
   - ./unifem_jupyter.py -d -n -t latest && sleep 10 && docker stop $(docker ps -q)
