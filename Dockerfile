@@ -10,6 +10,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 ADD image/bin $DOCKER_HOME/bin
+COPY WELCOME $DOCKER_HOME/WELCOME
 
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
@@ -35,7 +36,7 @@ RUN apt-get update && \
          PyQt5 \
          spyder && \
     rm -rf /var/lib/apt/lists/* /tmp/* && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 ###############################################################
 # Build Unifem for Octave
@@ -45,12 +46,12 @@ USER $DOCKER_USER
 RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     rm -f $DOCKER_HOME/.octaverc && \
-    mkdir -p $DOCKER_HOME/.config/unifem && \
+    mkdir -p $DOCKER_HOME/.unifem && \
     echo " \
-    addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack\n\
-    run $DOCKER_HOME/fastsolve/paracoder/load_m2c.m\n\
-    run $DOCKER_HOME/fastsolve/petsc4m/load_petsc.m\n\
-    " > $DOCKER_HOME/.config/unifem/startup.m && \
+    run $DOCKER_HOME/fastsolve/ilupack4m/startup.m\n\
+    run $DOCKER_HOME/fastsolve/paracoder/startup.m\n\
+    run $DOCKER_HOME/fastsolve/petsc4m/startup.m\n\
+    " > $DOCKER_HOME/.unifem/startup.m && \
     \
     $DOCKER_HOME/bin/pull_unifem && \
     $DOCKER_HOME/bin/build_unifem && \
