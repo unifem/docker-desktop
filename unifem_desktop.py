@@ -262,7 +262,7 @@ if __name__ == "__main__":
     if args.volume:
         volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
                     "-w", docker_home + "/" + APP]
-        vols = args.volume
+        vols = [args.volume]
         if args.tag == "dev":
             volumes += ["-v", "fastsolve_src:" + docker_home + "/fastsolve",
                         "-v", "numgeom_src:" + docker_home + "/numgeom",
