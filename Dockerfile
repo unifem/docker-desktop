@@ -9,7 +9,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
-ADD image/bin $DOCKER_HOME/bin
+ADD image/home $DOCKER_HOME/
 
 RUN pip3 install -U \
          numpy \
@@ -35,9 +35,9 @@ USER $DOCKER_USER
 RUN rm -f $DOCKER_HOME/.octaverc && \
     mkdir -p $DOCKER_HOME/.config/unifem && \
     echo " \
-    run /usr/local/paracoder/load_m2c.m\n\
-    run /usr/local/ilupack4m/load_milu.m\n\
-    run /usr/local/petsc4m/load_petsc.m\n\
+    run /usr/local/paracoder/startup.m\n\
+    run /usr/local/ilupack4m/startup.m\n\
+    run /usr/local/petsc4m/startup.m\n\
     " > $DOCKER_HOME/.config/unifem/startup.m && \
     \
     $DOCKER_HOME/bin/pull_unifem && \
