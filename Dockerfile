@@ -9,8 +9,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
-ADD image/bin $DOCKER_HOME/bin
-COPY WELCOME $DOCKER_HOME/WELCOME
+ADD image/home $DOCKER_HOME/
 
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
