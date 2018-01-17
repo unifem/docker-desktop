@@ -7,6 +7,6 @@ before_script:
 
 script:
   - './ci-util/build-docker.sh : unifem/desktop --build-arg SSHKEY_ID=$SSHKEY_ID &&
-     ./unifem.py -d -n && docker stop $(docker ps -q) &&
-     ./unifem.py -d -n && docker stop $(docker ps -q) &&
+     ./unifem_desktop.py -d -n && docker stop $(docker ps -q) &&
+     ./unifem_jupyter.py -d -n && docker stop $(docker ps -q) &&
     ./ci-util/trigger-via-api.sh'
