@@ -17,7 +17,6 @@ RUN apt-get update && \
     apt-get clean && \
     pip3 install -U \
          numpy \
-         matplotlib \
          sympy \
          scipy \
          pandas \
