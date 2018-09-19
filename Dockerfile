@@ -16,6 +16,7 @@ ARG MFILE_ID=secret
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+         pkg-config \
          libnss3 && \
     pip3 install -U \
          numpy \
