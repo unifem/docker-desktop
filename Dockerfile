@@ -11,7 +11,11 @@ USER root
 WORKDIR /tmp
 ADD image/home $DOCKER_HOME/
 
-RUN pip3 install -U \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+         python3-matplotlib && \
+    apt-get clean && \
+    pip3 install -U \
          numpy \
          matplotlib \
          sympy \
@@ -25,6 +29,7 @@ RUN pip3 install -U \
          six \
          \
          urllib3 && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
 ###############################################################
