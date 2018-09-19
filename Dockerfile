@@ -13,9 +13,10 @@ ADD image/home $DOCKER_HOME/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-         python3-matplotlib && \
+         pkg-config && \
     apt-get clean && \
     pip3 install -U \
+         matplotlib \
          numpy \
          sympy \
          scipy \
